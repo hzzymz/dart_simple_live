@@ -8,7 +8,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Setup Flutter 3.22.0
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.22.0"
@@ -17,14 +17,17 @@ jobs:
 
       - name: Enable Windows desktop
         run: flutter config --enable-windows-desktop
+      
+      - name: Set Dart mirror
+        run: echo "PUB_HOSTED_URL=https://pub.flutter-io.cn" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Get dependencies
         working-directory: simple_live_app
         run: flutter pub get
 
-      - name: Build Windows Release
+      - name: Build Windows Release（强制VS2022生成器）
         working-directory: simple_live_app
-        run: flutter build windows --release
+        run: flutter build windows --release --cmake-args="-G" "Visual Studio 17 2022"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
